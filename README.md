@@ -1,14 +1,14 @@
 # personium-plugin-sample
 
 ## About
-Sample of [personium](http://personium.io) authentication plugin.
+Sample of [personium](https://personium.io) authentication plugin.
 
 ## Installation
 Please see [Setup Authentication Plugins](https://personium.io/docs/en/server-operator/setup_authentication_plugins.html).
 
 ## Details
-Account type:"auth:sample"
-grant_type:"urn:x-personium:auth:sample"
+Account type:"auth:sample"  
+grant_type:"urn:x-personium:auth:sample"  
 
 Only when "personium" is specified for sample_password, the result is returned as authenticated with the account sample_account.
 
