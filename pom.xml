@@ -1,7 +1,10 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
+
+    <!-- Rewrite it according to your plugin. -->
     <groupId>io.personium</groupId>
     <artifactId>personium-plugin-sample</artifactId>
+
     <packaging>jar</packaging>
     <version>1.0.0</version>
     <licenses>
@@ -13,8 +16,11 @@
     </licenses>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+        <!-- Rewrite it according to your plugin. -->
         <final.name>personium-plugin-sample</final.name>
         <plugin.class>io.personium.plugin.auth.sample.SampleAuthPlugin</plugin.class>
+
         <java.version>1.8</java.version>
         <java.source.version>1.8</java.source.version>
         <java.target.version>1.8</java.target.version>
