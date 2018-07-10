@@ -24,21 +24,27 @@ import java.util.Map;
 import java.util.Properties;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.http.HttpStatus;
 
 import io.personium.plugin.base.PluginException;
 import io.personium.plugin.base.auth.AuthConst;
 import io.personium.plugin.base.auth.AuthPlugin;
+import io.personium.plugin.base.auth.AuthPluginException;
 import io.personium.plugin.base.auth.AuthenticatedIdentity;
 
 /**
  * Sample auth plugin.
+ * <pre>
  * Grant type : urn:x-personium:auth:sample
- * Only when "personium" is specified for sample_password,
- * the result is returned as authenticated with the account sample_account.
+ *
+ * Behavior:
+ * - "personium" is specified for sample_password
+ *  - Authentication successful with the account specified by sample_account
+ * - sample_password other than "personium" is specified
+ *  - Authentication failure
  *
  * Example of calling this plugin:
- * curl "https://unit.com/cellname/__token" -X POST -i -d 'grant_type=urn:x-personium:auth:sample&sample_account=sample&sample_password=personium'
+ * curl "https://{UnitFQDN}/{CellName}/__token" -X POST -i -d 'grant_type=urn:x-personium:auth:sample&sample_account=sample&sample_password=personium'
+ * </pre>
  */
 public class SampleAuthPlugin implements AuthPlugin {
 
@@ -69,7 +75,7 @@ public class SampleAuthPlugin implements AuthPlugin {
         try (InputStream is = SampleAuthPlugin.class.getClassLoader().getResourceAsStream(file)) {
             prop.load(is);
         } catch (IOException e) {
-            throw new PluginException(HttpStatus.SC_INTERNAL_SERVER_ERROR, "Failed to load properties.");
+            throw new RuntimeException("Failed to load properties.", e);
         }
         return prop;
     }
@@ -107,9 +113,9 @@ public class SampleAuthPlugin implements AuthPlugin {
      * If authentication succeeds, set "AccountName", "AccountType" and return.
      */
     @Override
-    public AuthenticatedIdentity authenticate(Map<String, List<String>> body) throws PluginException {
+    public AuthenticatedIdentity authenticate(Map<String, List<String>> body) throws AuthPluginException {
         if (body == null || body.isEmpty()) {
-            throw createPluginException(HttpStatus.SC_BAD_REQUEST, ERROR_REQUIRED_PARAM_MISSING, "Body");
+            throw new AuthPluginException.InvalidRequest(getErrorMessage(ERROR_REQUIRED_PARAM_MISSING, "Body"));
         }
 
         String account = getSingleValue(body, KEY_ACCOUNT);
@@ -134,27 +140,16 @@ public class SampleAuthPlugin implements AuthPlugin {
      * @return Value corresponding to key
      * @throws PluginException Value does not exist
      */
-    private String getSingleValue(Map<String, List<String>> body, String key) throws PluginException {
+    private String getSingleValue(Map<String, List<String>> body, String key) throws AuthPluginException {
         List<String> valueList = body.get(key);
         if (valueList == null) {
-            throw createPluginException(HttpStatus.SC_BAD_REQUEST, ERROR_REQUIRED_PARAM_MISSING, key);
+            throw new AuthPluginException.InvalidRequest(getErrorMessage(ERROR_REQUIRED_PARAM_MISSING, key));
         }
         String value = valueList.get(0);
         if (StringUtils.isEmpty(value)) {
-            throw createPluginException(HttpStatus.SC_BAD_REQUEST, ERROR_REQUIRED_PARAM_MISSING, key);
+            throw new AuthPluginException.InvalidRequest(getErrorMessage(ERROR_REQUIRED_PARAM_MISSING, key));
         }
         return value;
-    }
-
-    /**
-     * Create and return PluginException.
-     * @param statusCode Response status code
-     * @param messageKey message key
-     * @param messageParams message args
-     * @return PluginException
-     */
-    private PluginException createPluginException(int statusCode, String messageKey, Object... messageParams) {
-        return new PluginException(statusCode, getErrorMessage(messageKey, messageParams));
     }
 
     /**
