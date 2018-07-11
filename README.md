@@ -10,16 +10,20 @@ Please see [Setup Authentication Plugins](https://personium.io/docs/en/server-op
 Account type:"auth:sample"  
 grant_type:"urn:x-personium:auth:sample"  
 
-Only when "personium" is specified for sample_password, the result is returned as authenticated with the account sample_account.
+Behavior  
+- "personium" is specified for sample_password
+  - Authentication successful with the account specified by sample_account
+- sample_password other than "personium" is specified
+  - Authentication failure
 
 ## Example of calling this plugin
 1. Create target account
 ```
-curl "https://unit.com/cellname/__ctl/Account" -X POST -i -H 'Authorization: Bearer {AccessToken}' -H 'Accept: application/json' -d '{"Name":"sample","Type":"auth:sample"}'
+curl "https://{UnitFQDN}/{CellName}/__ctl/Account" -X POST -i -H 'Authorization: Bearer {AccessToken}' -H 'Accept: application/json' -d '{"Name":"sample","Type":"auth:sample"}'
 ```
 2. Authentication
 ```
-curl "https://unit.com/cellname/__token" -X POST -i -d 'grant_type=urn:x-personium:auth:sample&sample_account=sample&sample_password=personium'
+curl "https://{UnitFQDN}/{CellName}/__token" -X POST -i -d 'grant_type=urn:x-personium:auth:sample&sample_account=sample&sample_password=personium'
 ```
 
 ## License
